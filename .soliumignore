@@ -1,0 +1,6 @@
+dist
+build
+node_modules
+contracts/base/Migrations.sol
+contracts/base/oraclizeAPI.sol
+contracts/base/OraclizeC.sol

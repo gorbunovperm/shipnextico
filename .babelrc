@@ -1,0 +1,11 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "current",
+        "uglify": false
+      }
+    }],
+    "stage-0"
+  ]
+}

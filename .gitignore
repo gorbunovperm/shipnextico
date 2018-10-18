@@ -1,0 +1,10 @@
+deploy.log
+pids/*
+.DS_Store
+node_modules
+.c9
+.idea
+tmp
+
+/contracts/.json
+/package-lock.json
