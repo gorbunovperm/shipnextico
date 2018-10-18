@@ -41,7 +41,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
   // maximum available SHPC with a bonus
   uint public maxDistributeCoin = 600000000 * 1 ether; //600,000,000 shpc (incl. bonus)
   // minimal accept payment
-  uint public minimalContributionUSD = 10000; // 100$ in cents
+  uint public minimalContributionUSD = 100000; // 1000$ in cents
 
   // start and end timestamps where investments are allowed in PreSale
   uint public startPreSaleDate;
@@ -120,7 +120,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
    * @param _endPreSaleDate timestamp
    * @param _startSaleDate timestamp
    * @param _endSaleDate timestamp
-   */ 
+   */
   function init(
     address _coinAddress,
     address _storageContract,
@@ -254,7 +254,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
   /**
    * @dev Set softCapUSD
    * @param _softCapUsdInCents uint softCapUSD > 100000
-   */ 
+   */
   function setSoftCap(uint _softCapUsdInCents) public onlyOwner {
     require(_softCapUsdInCents > 100000);
     softCapUSD = _softCapUsdInCents;
@@ -287,7 +287,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
     state = SaleState.PRESALE;
     emit ChangeState(block.number, state);
   }
-  
+
   /**
    * @dev Change status. Start calculate presale bonus.
    */
@@ -410,7 +410,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
    * @dev Edit contribution payment.
    * @param uId uint contributor identificator
    * @param payId uint payment identificator
-   * @param value uint 
+   * @param value uint
    * @param _currencyUSD uint current ticker rate (optional field)
    * @param _bonusPercent uint current ticker rate (optional field)
    */
@@ -458,7 +458,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
 
   /**
    * @dev Check if softCap is reached
-   */ 
+   */
   function checkSoftCapAchieved() public view returns(bool) {
     return softCapAchieved || getTotalUsdRaisedInCents() >= softCapUSD;
   }
@@ -473,10 +473,10 @@ contract ShipCoinCrowdsale is MultiOwnable {
     emit SoftCapAchieved(getTotalUsdRaisedInCents());
     address(multiSig).transfer(address(this).balance);
   }
-  
+
   /**
    * @dev Send ETH from contract balance to multiSig. When softcap riched.
-   */ 
+   */
   function getEther() public onlyMultiOwnersType(9) {
     require(softCapAchieved);
     address(multiSig).transfer(address(this).balance);
@@ -484,42 +484,42 @@ contract ShipCoinCrowdsale is MultiOwnable {
 
   /**
    * @dev Return maximum amount buy token.
-   */ 
+   */
   function calculateMaxCoinIssued() public view returns (uint) {
     return maxDistributeCoin - currencyContract.getCoinRaisedInWei();
   }
-  
+
   /**
    * @dev Return raised SHPC in wei.
-   */ 
+   */
   function getCoinRaisedInWei() public view returns (uint) {
     return currencyContract.getCoinRaisedInWei();
   }
-  
+
   /**
    * @dev Return raised usd in cents.
-   */ 
+   */
   function getTotalUsdRaisedInCents() public view returns (uint) {
     return currencyContract.getTotalUsdRaisedInCents();
   }
-  
+
   /**
    * @dev Return all currency rate in json.
-   */ 
+   */
   function getAllCurrencyTicker() public view returns (string) {
     return currencyContract.getAllCurrencyTicker();
   }
 
   /**
    * @dev Return SHPC price in cents.
-   */ 
+   */
   function getCoinUSDRate() public view returns (uint) {
     return currencyContract.getCoinUSDRate();
   }
 
   /**
    * @dev Retrun SHPC balance in contract.
-   */ 
+   */
   function getCoinBalance() public view returns (uint) {
     return coinContract.balanceOf(address(this));
   }
@@ -535,7 +535,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
    * @dev Processing of the data of the contributors. Bonus assignment for presale.
    * @param start uint > 0
    * @param limit uint > 0
-   */ 
+   */
   function processSetPreSaleBonus(uint start, uint limit) public onlyMultiOwnersType(10) {
     require(state == SaleState.CALCPSBONUS);
     require(start >= 0 && limit > 0);
@@ -549,7 +549,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
   /**
    * @dev Processing of the data of the contributor by uId. Bonus assignment for presale.
    * @param uId uint
-   */ 
+   */
   function reCountUserPreSaleBonus(uint uId) public onlyMultiOwnersType(11) returns(bool) {
     if (uint(state) > 1) { // > PRESALE
       uint maxPayTime = 0;
@@ -614,7 +614,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
     endPreSaleDate = date;
     emit ManualChangeEndPreSaleDate(oldDate, date);
   }
-  
+
   /**
    * @dev Set startSaleDate
    * @param date timestamp
@@ -624,7 +624,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
     startSaleDate = date;
     emit ManualChangeStartSaleDate(oldDate, date);
   }
-  
+
   /**
    * @dev Set endSaleDate
    * @param date timestamp
@@ -692,7 +692,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
   function getMinReachUsdPayInCents() public view returns(uint) {
     return bonusContract.getMinReachUsdPayInCents();
   }
-  
+
   /**
    * @dev Return current sale day.
    */

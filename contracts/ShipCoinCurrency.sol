@@ -7,7 +7,7 @@ import "./ICurrency.sol";
 
 
 /**
- * @title Convert eth,btc,eur to usd and storage payment from currency
+ * @title Convert eth,btc,eur,amb to usd and storage payment from currency
  */
 contract ShipCoinCurrency is ICurrency, MultiOwnable, String {
   using SafeMath for uint256;
@@ -47,37 +47,39 @@ contract ShipCoinCurrency is ICurrency, MultiOwnable, String {
    * @param _ethPrice in cents example 58710 = 587.10$
    * @param _btcPrice in cents example 772301 = 7723.01$
    * @param _eurPrice in cents example 117 = 1.17$
+   * @param _ambPrice in cents example 18 = 0.18$
    */
-  constructor(uint _ethPrice, uint _btcPrice, uint _eurPrice) public {
+  constructor(uint _ethPrice, uint _btcPrice, uint _eurPrice, uint _ambPrice) public {
 
     require(addUpdateCurrency("ETH", _ethPrice, (1 ether)));
     require(addUpdateCurrency("BTC", _btcPrice, (10**8)));
     require(addUpdateCurrency("USD", 1, 1));
     require(addUpdateCurrency("EUR", _eurPrice, 100));
+    require(addUpdateCurrency("AMB", _ambPrice, (1 ether)));
 
   }
 
   /**
    * @dev Returns the collected amount in dollars. Summarize at the rate when the payment was made.
-   */ 
+   */
   function getUsdAbsRaisedInCents() external view returns(uint) {
     return usdAbsRaisedInCents;
   }
-  
+
   /**
    * @dev Return the amount of SHPC sold as a bonus.
    */
   function getCoinRaisedBonusInWei() external view returns(uint) {
     return coinRaisedBonusInWei;
   }
-  
+
   /**
    * @dev Add or Update currency
    */
   function addUpdateCurrency(string _ticker, uint _usd, uint _devision) public returns(bool) {
     return addUpdateCurrency(_ticker, _usd, _devision, 0, 0);
   }
-  
+
   /**
    * @dev Add or Update currency
    */
@@ -255,7 +257,7 @@ contract ShipCoinCurrency is ICurrency, MultiOwnable, String {
   }
 
   /**
-   * @dev Returns the sum of investments with conversion to dollars at the current rate with a deduction of interest. 
+   * @dev Returns the sum of investments with conversion to dollars at the current rate with a deduction of interest.
    */
   function getTotalUsdRaisedInCents() public view returns(uint) {
     uint totalUsdAmount = 0;
@@ -439,7 +441,7 @@ contract ShipCoinCurrency is ICurrency, MultiOwnable, String {
   }
 
   /**
-   * @dev Calculate the percentage of the amount 
+   * @dev Calculate the percentage of the amount
    * example: 100 - 5% = 95
    */
   function subPercent(uint a, uint b) private pure returns(uint) {

@@ -20,20 +20,20 @@ let ShipCoinStorage       = null;
 let ShipCoinBonusSystem   = null;
 let ShipCoinCrowdsale     = null;
 
-let eth,btc,eur;
+let eth,btc,eur,amb;
 let usersData = {
   'user1': {
     id: 10,
     address: null,
     payments: {
       "ETH": [
-        web3.utils.toWei('1'),      //  1 ETH
-        web3.utils.toWei('0.55'),   //  0.55 ETH
-        web3.utils.toWei('0.556'),  //  0.556 ETH
+        web3.utils.toWei('7'),      //  7 ETH
+        web3.utils.toWei('5.55'),   //  5.55 ETH
+        web3.utils.toWei('5.556'),  //  5.556 ETH
       ],
       "NOETH": [
         {"ticker": "BTC", "value": 100000000, 'pId': 1}, // 1 BTC
-        {"ticker": "USD", "value": 10000,      'pId': 2}, // 100$
+        {"ticker": "USD", "value": 100000,      'pId': 2}, // 1000$
         {"ticker": "USD", "value": 125000,     'pId': 3}, // 1250$
       ]
     }
@@ -52,7 +52,7 @@ let usersData = {
     address: null,
     payments: {
       "NOETH": [
-        {"ticker": "USD", "value": 500000, 'pId': 5}, // 5000$
+        {"ticker": "USD", "value": 1000000, 'pId': 5}, // 10000$
       ]
     }
   },
@@ -61,9 +61,9 @@ let usersData = {
     address: null,
     payments: {
       "ETH": [
-        web3.utils.toWei('1'),      //  1 ETH
-        web3.utils.toWei('0.65'),   //  0.65 ETH
-        web3.utils.toWei('0.673'),  //  0.673 ETH
+        web3.utils.toWei('6'),      //  6 ETH
+        web3.utils.toWei('5.65'),   //  5.65 ETH
+        web3.utils.toWei('5.673'),  //  5.673 ETH
       ],
     }
   },
@@ -72,7 +72,7 @@ let usersData = {
     address: null,
     payments: {
       "ETH": [
-        web3.utils.toWei('1'),      //  1 ETH
+        web3.utils.toWei('5'),      //  1 ETH
       ],
     }
   }
@@ -114,10 +114,11 @@ contract('Check refund', async (accountsData) => {
         eth = currency.eth;
         btc = currency.btc;
         eur = currency.eur;
+        amb = currency.amb;
       });
 
       ShipCoin = await Contract.new('ShipCoin');
-      ShipCoinCurrency = await Contract.new('ShipCoinCurrency', [usdToCents(eth), usdToCents(btc), usdToCents(eur)]);
+      ShipCoinCurrency = await Contract.new('ShipCoinCurrency', [usdToCents(eth), usdToCents(btc), usdToCents(eur), usdToCents(amb)]);
       ShipCoinStorage = await Contract.new('ShipCoinStorage');
       ShipCoinBonusSystem = await Contract.new('ShipCoinBonusSystem');
       ShipCoinCrowdsale = await Contract.new('ShipCoinCrowdsale');
@@ -145,6 +146,7 @@ contract('Check refund', async (accountsData) => {
       console.log(` ETH               | ${eth.toFixed(2)}$ in cents(${usdToCents(eth)})`);
       console.log(` BTC               | ${btc.toFixed(2)}$ in cents(${usdToCents(btc)})`);
       console.log(` EUR               | ${eur.toFixed(2)}$ in cents(${usdToCents(eur)})`);
+      console.log(` AMB               | ${amb.toFixed(2)}$ in cents(${usdToCents(amb)})`);
       console.log(`----------------------------------------------------------------\n`);
 
       if (Contract.network == 'development') {
@@ -213,7 +215,7 @@ contract('Check refund', async (accountsData) => {
     }
   });
 
-  it('Payment in btc,usd,eur', async () => {
+  it('Payment in btc,usd,eur,amb', async () => {
     for (let key in usersData) {
       let user = usersData[key];
       if (user.payments && user.payments.NOETH) {

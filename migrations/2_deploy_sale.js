@@ -20,7 +20,8 @@ module.exports = function(deployer, network, accounts) {
     let multisigAddress = null;
     let ethPrice = 0;
     let btcPrice = 0;
-    let eurPrice = 117;
+    let eurPrice = 0;
+    let ambPrice = 0;
 
     if (network === "development") {
       multisigAddress = '0x220cD6eBB62F9aD170C9bf7984F22A3afc023E7d';
@@ -36,7 +37,8 @@ module.exports = function(deployer, network, accounts) {
     let ShipCoinCurrency = new Migration('ShipCoinCurrency', {
       _ethPrice: ethPrice,
       _btcPrice: btcPrice,
-      _eurPrice: eurPrice
+      _eurPrice: eurPrice,
+      _ambPrice: ambPrice,
     });
     let ShipCoinCrowdsale = new Migration('ShipCoinCrowdsale');
 
@@ -46,13 +48,13 @@ module.exports = function(deployer, network, accounts) {
         ethPrice = currency.eth;
         btcPrice = currency.btc;
         eurPrice = currency.eur;
+        ambPrice = currency.amb;
       })
       .then(() => ShipCoin.deploy())
       .then(() => ShipCoinStorage.deploy())
       .then(() => ShipCoinBonusSystem.deploy())
-      .then(() => ShipCoinCurrency.deploy({_ethPrice: ethPrice, _btcPrice: btcPrice, _eurPrice: eurPrice}))
-      .then(() => ShipCoinCrowdsale.deploy()
-      )
+      .then(() => ShipCoinCurrency.deploy({_ethPrice: ethPrice, _btcPrice: btcPrice, _eurPrice: eurPrice, _ambPrice: ambPrice}))
+      .then(() => ShipCoinCrowdsale.deploy())
       .then(() => ShipCoinCrowdsale.init(
         ShipCoin.address,
         ShipCoinStorage.address,
@@ -74,6 +76,8 @@ module.exports = function(deployer, network, accounts) {
         Migration.log('gasPrice:              ', Migration.gasPrice);
         Migration.log('ethPrice:              ', Migration.ethPrice);
         Migration.log('btcPrice:              ', btcPrice);
+        Migration.log('eurPrice:              ', eurPrice);
+        Migration.log('ambPrice:              ', ambPrice);
         multisigAddress && Migration.log('multisigAddress:       ', multisigAddress);
 
         Migration.getInfoAll();

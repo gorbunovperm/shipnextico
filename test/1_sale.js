@@ -19,7 +19,7 @@ let ShipCoinCurrency      = null;
 let ShipCoinStorage       = null;
 let ShipCoinCrowdsale     = null;
 
-let eth,btc,eur, totalUserETHPayment = 0;
+let eth,btc,eur,amb, totalUserETHPayment = 0;
 let userDataCurrencyPayment = { ETH:0 };
 let usersData = {
   'user1': {
@@ -27,15 +27,15 @@ let usersData = {
     address: null,
     payments: {
       "ETH": [
-        web3.utils.toWei('1'),      //  1 ETH
-        web3.utils.toWei('0.55'),   //  0.55 ETH
-        web3.utils.toWei('0.556'),  //  0.556 ETH
+        web3.utils.toWei('7'),      //  7 ETH
+        web3.utils.toWei('5.55'),   //  5.55 ETH
+        web3.utils.toWei('5.556'),  //  5.556 ETH
       ],
       "NOETH": [
         {"ticker": "BTC", "value": 100000000,   'pId': 1}, // 1 BTC
-        {"ticker": "USD", "value": 10000,       'pId': 2}, // 100$
+        {"ticker": "USD", "value": 100000,       'pId': 2}, // 1000$
         {"ticker": "USD", "value": 125000,      'pId': 3}, // 1250$
-        {"ticker": "USD", "value": 58000,       'pId': 35}, // 580$
+        {"ticker": "USD", "value": 158000,       'pId': 35}, // 1580$
         {"ticker": "BTC", "value": 50000000,    'pId': 45}, // 0.5 BTC
       ]
     }
@@ -55,7 +55,7 @@ let usersData = {
     address: null,
     payments: {
       "NOETH": [
-        {"ticker": "USD", "value": 500000, 'pId': 5}, // 5000$
+        {"ticker": "USD", "value": 1000000, 'pId': 5}, // 10000$
       ]
     }
   },
@@ -106,6 +106,7 @@ contract('Sale', async (accountsData) => {
       eth=currency.eth+0.01;
       btc=currency.btc+0.01;
       eur=currency.eur+0.01;
+      amb=currency.amb+0.01;
     });
 
     console.log(`--------------------------- sale test --------------------------`);
@@ -117,6 +118,7 @@ contract('Sale', async (accountsData) => {
     console.log(` ETH               | ${eth.toFixed(2)}$  +0.01$  in cents(${usdToCents(eth)})`);
     console.log(` BTC               | ${btc.toFixed(2)}$ +0.01$  in cents(${usdToCents(btc)})`);
     console.log(` EUR               | ${eur.toFixed(2)}$    +0.01$  in cents(${usdToCents(eur)})`);
+    console.log(` AMB               | ${amb.toFixed(2)}$    +0.01$  in cents(${usdToCents(amb)})`);
     console.log(`----------------------------------------------------------------\n`);
 
     if(Contract.network == 'development') {
@@ -180,6 +182,7 @@ contract('Sale', async (accountsData) => {
       assert.isFalse(await ShipCoinCurrency.updateCurrency("ETH",usdToCents(eth)).send({ from: manager }).catch(e => false),'ETH');
       assert.isFalse(await ShipCoinCurrency.updateCurrency("BTC",usdToCents(btc)).send({ from: manager }).catch(e => false),'BTC');
       assert.isFalse(await ShipCoinCurrency.updateCurrency("EUR",usdToCents(eur)).send({ from: manager }).catch(e => false),'EUR');
+      assert.isFalse(await ShipCoinCurrency.updateCurrency("AMB",usdToCents(amb)).send({ from: manager }).catch(e => false),'AMB');
     });
 
     it('Adding the right to the manager to the function updateCurrency', async () => {
@@ -194,12 +197,14 @@ contract('Sale', async (accountsData) => {
      await ShipCoinCurrency.updateCurrency("ETH",usdToCents(eth)).send({ from: manager });
      await ShipCoinCurrency.updateCurrency("BTC",usdToCents(btc)).send({ from: manager });
      await ShipCoinCurrency.updateCurrency("EUR",usdToCents(eur)).send({ from: manager });
+     await ShipCoinCurrency.updateCurrency("AMB",usdToCents(amb)).send({ from: manager });
     });
 
     it('Checking that the exchange rate is correctly changed by the manager', async () => {
       assert.equal(web3.utils.toBN(await ShipCoinCurrency.getCurrencyRate("ETH").call({})).toNumber(), usdToCents(eth),'ETH');
       assert.equal(web3.utils.toBN(await ShipCoinCurrency.getCurrencyRate("BTC").call({})).toNumber(), usdToCents(btc),'BTC');
       assert.equal(web3.utils.toBN(await ShipCoinCurrency.getCurrencyRate("EUR").call({})).toNumber(), usdToCents(eur),'EUR');
+      assert.equal(web3.utils.toBN(await ShipCoinCurrency.getCurrencyRate("AMB").call({})).toNumber(), usdToCents(amb),'AMB');
     });
 
   });
@@ -256,7 +261,7 @@ contract('Sale', async (accountsData) => {
       assert.isFalse(await web3.eth.sendTransaction({
         from: usersData.user1.address,
         to: ShipCoinCrowdsale.address,
-        value: web3.utils.toWei('1'), // 1 ETH
+        value: web3.utils.toWei('5'), // 5 ETH
         gas: 600000
       }).catch(e => false));
     });
@@ -295,7 +300,7 @@ contract('Sale', async (accountsData) => {
       assert.equal(web3.utils.fromWei(web3.utils.toBN(await web3.eth.getBalance(ShipCoinCrowdsale.address)), 'ether'), web3.utils.fromWei(web3.utils.toBN(totalUserETHPayment), 'ether'));
     });
 
-    it('Payment in btc,usd,eur', async () => {
+    it('Payment in btc,usd,eur,amb', async () => {
       for (let key in usersData) {
         let user = usersData[key];
         if (user.payments && user.payments.NOETH) {
@@ -436,11 +441,11 @@ contract('Sale', async (accountsData) => {
       await web3.eth.sendTransaction({
         from: usersData.user3.address,
         to: ShipCoinCrowdsale.address,
-        value: web3.utils.toWei('1'),
+        value: web3.utils.toWei('5'),
         gas: 600000
       });
 
-      assert.equal(newMultiSigBalance.add(new BN(web3.utils.toWei('1'))).toString(),new BN(await web3.eth.getBalance(multiSig)).toString(),'checkMultiSigWallet');
+      assert.equal(newMultiSigBalance.add(new BN(web3.utils.toWei('5'))).toString(),new BN(await web3.eth.getBalance(multiSig)).toString(),'checkMultiSigWallet');
     });
 
     it('Refund payment before pre-sale bonusafter activeSoftCapAchieved', async () => {
@@ -501,7 +506,7 @@ contract('Sale', async (accountsData) => {
 
     it('Check change userPayment and reCalc PreSale bonus', async () => {
       let uId = usersData.user3.id;
-      await checkEditPay(uId, 5, 250000, 0, 0)(owner,ShipCoinStorage,ShipCoinCurrency,ShipCoinCrowdsale);
+      await checkEditPay(uId, 5, 500000, 0, 0)(owner,ShipCoinStorage,ShipCoinCurrency,ShipCoinCrowdsale);
     });
 
   });
@@ -526,7 +531,7 @@ contract('Sale', async (accountsData) => {
 
     it('Bonus 20% for the first 48 hours | 0 - 2 days', async () => {
       assert.equal(await ShipCoinCrowdsale.getCurrentDayBonus().call(), 20);
-      await checkPaySale(usersData.user4,web3.utils.toWei('1'),payType,20)(web3,owner,ShipCoinStorage,ShipCoinCurrency,ShipCoinCrowdsale);
+      await checkPaySale(usersData.user4,web3.utils.toWei('5'),payType,20)(web3,owner,ShipCoinStorage,ShipCoinCurrency,ShipCoinCrowdsale);
       await checkPaySale(usersData.user5,530000,'USD',20,10)(web3,owner,ShipCoinStorage,ShipCoinCurrency,ShipCoinCrowdsale);
     });
 
@@ -534,28 +539,29 @@ contract('Sale', async (accountsData) => {
       it('Bonus 15% for weeks 1-2 starting from day 3 | 3 - 14 days', async () => {
         await increaseTimeTo(startSale + timeIncrease.days(3));
         assert.equal(await ShipCoinCrowdsale.getCurrentDayBonus().call(), 15);
-        await checkPaySale(usersData.user4, web3.utils.toWei('1'), payType, 15)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
+        await checkPaySale(usersData.user4, web3.utils.toWei('5'), payType, 15)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
         await checkPaySale(usersData.user5, 10000000, 'BTC', 15, 11)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
       });
 
       it('Bonus 10% for weeks 3-4 | 15 - 28 days', async () => {
         await increaseTimeTo(startSale + timeIncrease.days(15));
         assert.equal(await ShipCoinCrowdsale.getCurrentDayBonus().call(), 10);
-        await checkPaySale(usersData.user4, web3.utils.toWei('1'), payType, 10)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
+        await checkPaySale(usersData.user4, web3.utils.toWei('5'), payType, 10)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
         await checkPaySale(usersData.user5, 10000, 'EUR', 10, 12)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
+        await checkPaySale(usersData.user5, web3.utils.toWei('10000'), 'AMB', 10, 12)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
       });
 
       it('Bonus 5% for weeks 5-6 | 29 - 42 days', async () => {
         await increaseTimeTo(startSale + timeIncrease.days(29));
         assert.equal(await ShipCoinCrowdsale.getCurrentDayBonus().call(), 5);
-        await checkPaySale(usersData.user4, web3.utils.toWei('1'), payType, 5)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
+        await checkPaySale(usersData.user4, web3.utils.toWei('5'), payType, 5)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
         await checkPaySale(usersData.user5, 25000, 'USD', 5, 13)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
       });
 
       it('Bonus 0 for weeks 7-8 | 43 - 56 days', async () => {
         await increaseTimeTo(startSale + timeIncrease.days(43));
         assert.equal(await ShipCoinCrowdsale.getCurrentDayBonus().call(), 0);
-        await checkPaySale(usersData.user4, web3.utils.toWei('1'), payType, 0)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
+        await checkPaySale(usersData.user4, web3.utils.toWei('5'), payType, 0)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
         await checkPaySale(usersData.user5, 12000, 'USD', 0, 14)(web3, owner, ShipCoinStorage, ShipCoinCurrency, ShipCoinCrowdsale);
       });
     }

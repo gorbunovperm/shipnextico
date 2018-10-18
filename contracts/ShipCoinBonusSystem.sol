@@ -20,7 +20,7 @@ contract ShipCoinBonusSystem is IBonus, MultiOwnable, String {
   uint256 private constant ONE_DAY = 86400;
 
   uint private preSaleBonusPercent = 40;
-  uint private minReachUsdPayInCents = 500000;
+  uint private minReachUsdPayInCents = 1000000;
 
   event AddBonus(uint startDay, uint endDay, uint percent);
   event ChangeBonus(uint startDay, uint endDay, uint percentOld, uint percentNew);
