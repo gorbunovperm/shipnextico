@@ -79,8 +79,6 @@ example output
 truffle(develop)> test
 Using network 'develop'.
 
-
-
   Contract: Sale
 --------------------------- sale test --------------------------
  ShipCoinStorage   | 0xaa588d3737b611bafd7bd713445b314bd453a5c8
@@ -88,64 +86,66 @@ Using network 'develop'.
  ShipCoinCrowdsale | 0x82d50ad3c1091866e258fd0f1a7cc9674609d254
  Manager           | 0xf17f52151ebef6c7334fad080c5704d77216b732
  MultiSig          | 0x0f4f2ac550a1b4e2280d04c21cea7ebd822934b5
- ETH               | 206.57$  +0.01$  in cents(20657)
- BTC               | 6541.60$ +0.01$  in cents(654160)
+ ETH               | 204.06$  +0.01$  in cents(20406)
+ BTC               | 6477.94$ +0.01$  in cents(647794)
  EUR               | 1.16$    +0.01$  in cents(116)
+ AMB               | 0.21$    +0.01$  in cents(21)
 ----------------------------------------------------------------
 
-    ✓ The manager does not have the rights to perform the functions addWhiteList,getContributorId,getContributionInfoById (148ms)
-    ✓ Add rights to the manager on the functions addWhiteList,getContributorId,getContributionInfoById (110ms)
-    ✓ Checking the rights of the manager for the functions addWhiteList,getContributorId,getContributionInfoById (78ms)
-    ✓ Adding users to WhiteList (315ms)
-    ✓ Checking if users are added (246ms)
-    ✓ Account manager functions execution getContributorId,getContributionInfoById (71ms)
+    ✓ The manager does not have the rights to perform the functions addWhiteList,getContributorId,getContributionInfoById (100ms)
+    ✓ Add rights to the manager on the functions addWhiteList,getContributorId,getContributionInfoById (39ms)
+    ✓ Checking the rights of the manager for the functions addWhiteList,getContributorId,getContributionInfoById
+    ✓ Adding users to WhiteList (210ms)
+    ✓ Checking if users are added (142ms)
+    ✓ Account manager functions execution getContributorId,getContributionInfoById
     Updating exchange rate
-      ✓ Checking the right to change course (114ms)
-      ✓ Adding the right to the manager to the function updateCurrency (44ms)
+      ✓ Checking the right to change course (100ms)
+      ✓ Adding the right to the manager to the function updateCurrency
       ✓ Checking the rights of the manager for the function updateCurrency
-      ✓ Exchange rate update by manager (195ms)
-      ✓ Checking that the exchange rate is correctly changed by the manager (100ms)
+      ✓ Exchange rate update by manager (177ms)
+      ✓ Checking that the exchange rate is correctly changed by the manager (52ms)
     ShipCoinCrowdsale
-      ✓ Adding the right ShipCoinCrowdsale (391ms)
-      ✓ Verify the right ShipCoinCrowdsale (322ms)
-      ✓ User balance user1,user2,user3 > 1 ETH
+      ✓ Adding the right ShipCoinCrowdsale (109ms)
+      ✓ Verify the right ShipCoinCrowdsale (279ms)
+      ✓ User balance user1,user2,user3 > 1 ETH (72ms)
       ✓ Check, status = 0
       ✓ Checking that you can not send eth until the contract is up and running
-      ✓ Start PreSale (45ms)
-      ✓ Checking the status of the sail = 1 (46ms)
-      ✓ Payment in ETH (1016ms)
+      ✓ Start PreSale
+      ✓ Checking the status of the sail = 1
+      ✓ Payment in ETH (429ms)
       ✓ Contract balance ETH
-      ✓ Payment in btc,usd,eur (1166ms)
-      ✓ Refund payment in pre-sale (4954ms)
-      ✓ Verify users billing information (2054ms)
+      ✓ Payment in btc,usd,eur,amb (1145ms)
+      ✓ Refund payment in pre-sale (5701ms)
+      ✓ Verify users billing information (2397ms)
     Changing a user payment in BTC
-      ✓ Nothing changed (5470ms)
-      ✓ Change of payment amount 2 BTC (5354ms)
-      ✓ The change in the dollar exchange rate 2000$ (5628ms)
-      ✓ Change of percent of bonuses 20% (5281ms)
-      ✓ Change all 3 BTC,2200$,10% (5294ms)
+      ✓ Nothing changed (6294ms)
+      ✓ Change of payment amount 2 BTC (6644ms)
+      ✓ The change in the dollar exchange rate 2000$ (6603ms)
+      ✓ Change of percent of bonuses 20% (8752ms)
+      ✓ Change all 3 BTC,2200$,10% (7192ms)
     Changing a user payment in ETH
-      ✓ Nothing changed (5263ms)
-      ✓ Change of payment amount to 10 ETH (5477ms)
-      ✓ The change in the dollar exchange rate 850$ (5583ms)
-      ✓ Change of percent of bonuses 5% (5705ms)
-      ✓ Change all 11ETH,857.51$,10% (5555ms)
+      ✓ Nothing changed (6794ms)
+      ✓ Change of payment amount to 10 ETH (6616ms)
+      ✓ The change in the dollar exchange rate 850$ (6728ms)
+      ✓ Change of percent of bonuses 5% (6759ms)
+      ✓ Change all 11ETH,857.51$,10% (6689ms)
     Crowdsale softcap
-      ✓ Reach softcap (1538ms)
-      ✓ Refund payment before pre-sale bonusafter activeSoftCapAchieved (4774ms)
-      ✓ Check users presale bonus (4906ms)
-      ✓ Check change userPayment and reCalc PreSale bonus (5243ms)
+      ✓ Reach softcap (944ms)
+      ✓ Refund payment before pre-sale bonusafter activeSoftCapAchieved (6977ms)
+      ✓ Check users presale bonus (6307ms)
+      ✓ Check change userPayment and reCalc PreSale bonus (7209ms)
     Sale
       ✓ State = SALE
-      ✓ Bonus 20% for the first 48 hours | 0 - 2 days (10236ms)
+      ✓ Bonus 20% for the first 48 hours | 0 - 2 days (12299ms)
       ✓ Bonus 15% for weeks 1-2 starting from day 3 | 3 - 14 days (11118ms)
       ✓ Bonus 10% for weeks 3-4 | 15 - 28 days (10166ms)
-      ✓ Bonus 5% for weeks 5-6 | 29 - 42 days (10515ms)
-      ✓ Bonus 0 for weeks 7-8 | 43 - 56 days (10527ms)
-      ✓ Sale state set end (66ms)
-      ✓ Refund payment (4602ms)
-      ✓ Get contributor SHPC (2505ms)
-      ✓ Send SHPC to contributors (3537ms)
+      ✓ Bonus 5% for weeks 5-6 | 29 - 42 days (13600ms)
+      ✓ Bonus 0 for weeks 7-8 | 43 - 56 days (13041ms)
+      ✓ Sale state set end (63ms)
+      ✓ Get ETH after contract sale end (646ms)
+      ✓ Refund payment (5998ms)
+      ✓ Get contributor SHPC (2515ms)
+      ✓ Send SHPC to contributors (3440ms)
 
   Contract: Check refund
 ------------------------- refund test --------------------------
@@ -154,26 +154,25 @@ Using network 'develop'.
  ShipCoinCrowdsale | 0x4e72770760c011647d4873f60a3cf6cdea896cd8
  Manager           | 0xf17f52151ebef6c7334fad080c5704d77216b732
  MultiSig          | 0x0f4f2ac550a1b4e2280d04c21cea7ebd822934b5
- ETH               | 206.40$ in cents(20640)
- BTC               | 6540.16$ in cents(654016)
+ ETH               | 204.42$ in cents(20442)
+ BTC               | 6488.76$ in cents(648876)
  EUR               | 1.15$ in cents(115)
+ AMB               | 0.20$ in cents(20)
 ----------------------------------------------------------------
 
-    ✓ Payment in ETH (903ms)
-    ✓ Payment in btc,usd,eur (694ms)
-    ✓ Refund payment (5693ms)
-    ✓ Refund user (2033ms)
-    ✓ Refund users (2692ms)
+    ✓ Payment in ETH (845ms)
+    ✓ Payment in btc,usd,eur,amb (657ms)
+    ✓ Refund payment (5859ms)
+    ✓ Refund user (1751ms)
+    ✓ Refund users (2598ms)
 
   Contract: Check limits
-    ✓ Add users to whiteList (43196ms)
-    ✓ Payment in USD (14185ms)
-    ✓ Payment in BTC (149672ms)
-use eth: 11.649873600000006
-    ✓ Check payment info (133208ms)
+    ✓ Add users to whiteList (46287ms)
+    ✓ Payment in USD (161936ms)
+    ✓ Payment in BTC (170411ms)
+use eth: 17.668053279999995
+    ✓ Check payment info (164091ms)
 
 
-  56 passing (8m)
-
-
+  57 passing (12m)
 ```

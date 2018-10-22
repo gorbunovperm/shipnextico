@@ -127,6 +127,7 @@ contract('Check limits', async (accountsData) => {
       let address = getAddress();
       try {
         await ShipCoinStorage.addWhiteList(i, address).send({from: owner, gas: 200000, nolog: true});
+        users[i] = 0;
       } catch (e) {
         console.log('Add users to whiteList',i,address);
       }
@@ -135,12 +136,9 @@ contract('Check limits', async (accountsData) => {
 
   it('Payment in USD', async () => {
     for(let i = 1; i <= countUsers; i++) {
-      let paymentValue = (Math.round(Math.random() * i + Math.random()) * 100000) + 100000;
-      totalUSDpayment += paymentValue;
-      if(paymentValue >= 1000000) {
-        totalUSDpaymentMore10000Dolars++;
-        users[i]=true;
-      }
+      let paymentValue = +(Math.round(Math.random() * i + Math.random()) * 100000) + 100000;
+      users[i]+=paymentValue;
+
       try {
         await ShipCoinCrowdsale.addPay('USD', paymentValue, i, i, 0).send({
           from: owner,
@@ -158,12 +156,8 @@ contract('Check limits', async (accountsData) => {
     let currencyData = await ShipCoinCurrency.getContractStatic();
     for(let i = 1; i <= countUsers; i++) {
       let paymentValue = (Math.round(Math.random() * i + Math.random()) * 10000000) + 60000000;
-      let usdRaisedCurrency = getUsdFromCurrency('BTC', paymentValue, currencyData).toString();
-      totalUSDpayment += parseInt(usdRaisedCurrency);
-      if(!users[i] && usdRaisedCurrency >= 1000000) {
-        totalUSDpaymentMore10000Dolars++;
-        users[i]=true;
-      }
+      users[i]+= parseInt(getUsdFromCurrency('BTC', paymentValue, currencyData).toString());
+
       try {
         await ShipCoinCrowdsale.addPay('BTC', paymentValue, i, (i*countUsers+1), 0).send({
           from: owner,
@@ -178,17 +172,25 @@ contract('Check limits', async (accountsData) => {
   });
 
   it('Check payment info', async () => {
+
+    for(let key in users) {
+      totalUSDpayment+=parseInt(users[key]);
+      if(parseInt(users[key]) >= 1000000) {
+        totalUSDpaymentMore10000Dolars++;
+      }
+    }
+
     let contractCurrencyUsdRaised = 0;
     let usersUsdAbs = 0;
     let nextContributorIndex,getCountNeedProcessPreSaleBonus,getCountNeedSendSHPC,getCountETHRefund;
-    let ownerBalance = web3.utils.fromWei(web3.utils.toBN(await web3.eth.getBalance(owner)), 'ether');
+
     try {
       nextContributorIndex = await ShipCoinStorage.nextContributorIndex().call();
     } catch (e) {
       console.log('nextContributorIndex',e);
     }
     try {
-      getCountNeedProcessPreSaleBonus = await ShipCoinStorage.getCountNeedProcessPreSaleBonus(10000000,0,countUsers).call();
+      getCountNeedProcessPreSaleBonus = await ShipCoinStorage.getCountNeedProcessPreSaleBonus(1000000,0,countUsers).call();
     } catch (e) {
       console.log('getCountNeedProcessPreSaleBonus',e);
     }
@@ -203,7 +205,6 @@ contract('Check limits', async (accountsData) => {
       console.log('getCountETHRefund',e);
     }
 
-    console.log('use eth:', (ownerStartBalance - ownerBalance));
 
     for(let i = 0; i < nextContributorIndex; i++) {
       let uId = await ShipCoinStorage.getContributorIndexes(i).call();
@@ -219,6 +220,9 @@ contract('Check limits', async (accountsData) => {
       let currency = contractCurrencyPaymentData[key];
       contractCurrencyUsdRaised += parseInt(currency.usdRaised);
     }
+
+    let ownerBalance = web3.utils.fromWei(web3.utils.toBN(await web3.eth.getBalance(owner)), 'ether');
+    console.log('use eth:', (ownerStartBalance - ownerBalance));
 
     assert.equal(contractUsdAbsRaisedInCents, contractCurrencyUsdRaised, 'contract usdAbsRaisedInCents');
     assert.equal(totalUSDpayment, usersUsdAbs, 'users usdAbsRaisedInCents');

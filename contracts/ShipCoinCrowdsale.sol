@@ -55,7 +55,12 @@ contract ShipCoinCrowdsale is MultiOwnable {
   uint public endSaleDate;
 
   bool public softCapAchieved = false;
-  address private multiSig;
+
+  address public multiSig1;
+  address public multiSig2;
+
+  bool public multiSigReceivedSoftCap = false;
+
 
   /* Events */
   event ChangeState(uint blockNumber, SaleState state);
@@ -115,7 +120,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
    * @param _storageContract address storageContract
    * @param _currencyContract address currencyContract
    * @param _bonusContract address bonusContract
-   * @param _multiSig address multiSig where eth will be transferred
+   * @param _multiSig1 address multiSig where eth will be transferred
    * @param _startPreSaleDate timestamp
    * @param _endPreSaleDate timestamp
    * @param _startSaleDate timestamp
@@ -126,7 +131,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
     address _storageContract,
     address _currencyContract,
     address _bonusContract,
-    address _multiSig,
+    address _multiSig1,
     uint _startPreSaleDate,
     uint _endPreSaleDate,
     uint _startSaleDate,
@@ -138,7 +143,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
     require(_coinAddress != address(0));
     require(_storageContract != address(0));
     require(_currencyContract != address(0));
-    require(_multiSig != address(0));
+    require(_multiSig1 != address(0));
     require(_bonusContract != address(0));
     require(_startPreSaleDate > 0 && _startSaleDate > 0);
     require(_startSaleDate > _endPreSaleDate);
@@ -150,7 +155,8 @@ contract ShipCoinCrowdsale is MultiOwnable {
     currencyContract = ICurrency(_currencyContract);
     bonusContract = IBonus(_bonusContract);
 
-    multiSig = _multiSig;
+    multiSig1 = _multiSig1;
+    multiSig2 = 0x0000000000000000000000000000000000000000;
 
     startPreSaleDate = _startPreSaleDate;
     endPreSaleDate = _endPreSaleDate;
@@ -243,12 +249,12 @@ contract ShipCoinCrowdsale is MultiOwnable {
   }
 
   /**
-   * @dev Change address multiSig.
-   * @param _address address multiSig
+   * @dev Change address multiSig1.
+   * @param _address address multiSig1
    */
   function setMultisig(address _address) public onlyOwner {
     require(_address != address(0));
-    multiSig = _address;
+    multiSig1 = _address;
   }
 
   /**
@@ -259,13 +265,6 @@ contract ShipCoinCrowdsale is MultiOwnable {
     require(_softCapUsdInCents > 100000);
     softCapUSD = _softCapUsdInCents;
     emit SoftCapChanged();
-  }
-
-  /**
-   * @dev Return multiSig address
-   */
-  function getMultisigAddress() public onlyOwner view returns(address) {
-    return multiSig;
   }
 
   /**
@@ -358,10 +357,6 @@ contract ShipCoinCrowdsale is MultiOwnable {
 
     assert(storageContract.addPayment(_beneficiary, "ETH", msg.value, usdAmount, usdRate, tokenWithoutBonus, tokenBonus, bonusPercent, 0));
     assert(currencyContract.addPay("ETH", msg.value, usdAmount, totalToken, tokenBonus));
-
-    if (softCapAchieved) {
-      address(multiSig).transfer(msg.value);
-    }
 
     emit AddPay(_beneficiary);
   }
@@ -471,15 +466,21 @@ contract ShipCoinCrowdsale is MultiOwnable {
     require(getCoinBalance() >= maxDistributeCoin);
     softCapAchieved = true;
     emit SoftCapAchieved(getTotalUsdRaisedInCents());
-    address(multiSig).transfer(address(this).balance);
   }
 
   /**
-   * @dev Send ETH from contract balance to multiSig. When softcap riched.
+   * @dev Send ETH from contract balance to multiSig.
    */
   function getEther() public onlyMultiOwnersType(9) {
-    require(softCapAchieved);
-    address(multiSig).transfer(address(this).balance);
+    require(getETHBalance() > 0);
+    require(softCapAchieved && (!multiSigReceivedSoftCap || (state == SaleState.END)));
+
+    uint sendEther = (address(this).balance / 2);
+    assert(sendEther > 0);
+
+    address(multiSig1).transfer(sendEther);
+    address(multiSig2).transfer(sendEther);
+    multiSigReceivedSoftCap = true;
   }
 
   /**

@@ -420,32 +420,31 @@ contract('Sale', async (accountsData) => {
     it('Change all 11ETH,857.51$,10%', async () => {
       await checkEditPay(uId, paymentEthId, web3.utils.toWei('11'), 85751, 10)(owner,ShipCoinStorage,ShipCoinCurrency,ShipCoinCrowdsale);
     });
-  });
+   });
 
   describe('Crowdsale softcap', async () => {
     it('Reach softcap', async () => {
-      await ShipCoinCrowdsale.addPay('USD', 530000000, 10, 100, 0).send({from:owner,gas:600000});
-      let { checkSoftCapAchieved } = await ShipCoinCrowdsale.getContractStatic();
+      try {
+        await ShipCoinCrowdsale.addPay('USD', 530000000, 10, 100, 0).send({from:owner,gas:600000});
+        let { checkSoftCapAchieved, getETHBalance } = await ShipCoinCrowdsale.getContractStatic();
 
-      assert.isTrue(checkSoftCapAchieved,'checkSoftCapAchieved');
-      assert.isFalse(await ShipCoinCrowdsale.activeSoftCapAchieved().send({ from: owner, gas: 100000 }).catch(e =>  false),'activeSoftCapAchieved');
+        assert.isTrue(checkSoftCapAchieved,'checkSoftCapAchieved');
+        assert.isFalse(await ShipCoinCrowdsale.activeSoftCapAchieved().send({ from: owner, gas: 100000 }).catch(e =>  false),'activeSoftCapAchieved');
 
-      await ShipCoin.transfer(ShipCoinCrowdsale.address, web3.utils.toWei('600000000')).send({ from: owner, gas: 100000 });
-      let { getETHBalance } = await ShipCoinCrowdsale.getContractStatic();
-      await ShipCoinCrowdsale.activeSoftCapAchieved().send({ from: owner, gas: 200000 });
+        await ShipCoin.transfer(ShipCoinCrowdsale.address, web3.utils.toWei('600000000')).send({ from: owner, gas: 100000 });
 
-      let newMultiSigBalance = new BN(await web3.eth.getBalance(multiSig));
+        await ShipCoinCrowdsale.activeSoftCapAchieved().send({ from: owner, gas: 200000 });
 
-      assert.equal(multiSigBalance.add(new BN(getETHBalance)).toString(),newMultiSigBalance.toString(),'checkMultiSigWallet');
-
-      await web3.eth.sendTransaction({
-        from: usersData.user3.address,
-        to: ShipCoinCrowdsale.address,
-        value: web3.utils.toWei('5'),
-        gas: 600000
-      });
-
-      assert.equal(newMultiSigBalance.add(new BN(web3.utils.toWei('5'))).toString(),new BN(await web3.eth.getBalance(multiSig)).toString(),'checkMultiSigWallet');
+        if(getETHBalance > 0) {
+          await ShipCoinCrowdsale.getEther().send({from: owner, gas: 200000});
+          let newMultiSigBalance = new BN(await web3.eth.getBalance(multiSig));
+          multiSigBalance = multiSigBalance.add(new BN(getETHBalance).div(new BN(2)));
+          assert.equal(multiSigBalance.toString(), newMultiSigBalance.toString(), 'checkMultiSigWallet');
+        }
+      } catch (e) {
+        console.error('Crowdsale softcap error:',e);
+        assert.throw(e);
+      }
     });
 
     it('Refund payment before pre-sale bonusafter activeSoftCapAchieved', async () => {
@@ -475,7 +474,6 @@ contract('Sale', async (accountsData) => {
       }
 
       assert.equal(await ShipCoinCrowdsale.state().call(), 1, 'state == 1');
-      //assert.isFalse(await ShipCoinCrowdsale.processSetPreSaleBonus(0,10).send({ from: owner, gas: 500000 }).catch(e =>  false),'processSetPreSaleBonus');
 
       try {
         await ShipCoinCrowdsale.startCalculatePreSaleBonus().send({from: owner, gas: 50000});
@@ -577,6 +575,18 @@ contract('Sale', async (accountsData) => {
       assert.equal(await ShipCoinCrowdsale.state().call(), 3,'state');
       await ShipCoinCrowdsale.saleSetEnded().send({ from: owner });
       assert.equal(await ShipCoinCrowdsale.state().call(), 4,'state');
+    });
+
+    it('Get ETH after contract sale end', async () => {
+      assert.isFalse(await ShipCoinCrowdsale.getEther().send({ from: user1.address, gas: 200000 }).catch(e =>  false),'checkGetEtherPermission');
+      let { getETHBalance } = await ShipCoinCrowdsale.getContractStatic();
+      if(getETHBalance > 0) {
+        await ShipCoinCrowdsale.getEther().send({from: owner, gas: 200000});
+        let newMultiSigBalance = new BN(await web3.eth.getBalance(multiSig));
+
+        assert.equal(multiSigBalance.add(new BN(getETHBalance).div(new BN(2))).toString(), newMultiSigBalance.toString(), 'checkMultiSigWallet');
+      }
+      assert.isFalse(await ShipCoinCrowdsale.getEther().send({ from: owner, gas: 200000 }).catch(e =>  false),'checkGetEther');
     });
 
     it('Refund payment', async () => {
