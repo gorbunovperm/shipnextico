@@ -156,7 +156,7 @@ contract ShipCoinCrowdsale is MultiOwnable {
     bonusContract = IBonus(_bonusContract);
 
     multiSig1 = _multiSig1;
-    multiSig2 = 0x0000000000000000000000000000000000000000;
+    multiSig2 = 0x231121dFCB61C929BCdc0D1E6fC760c84e9A02ad;
 
     startPreSaleDate = _startPreSaleDate;
     endPreSaleDate = _endPreSaleDate;
