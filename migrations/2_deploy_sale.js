@@ -28,7 +28,7 @@ module.exports = function(deployer, network, accounts) {
     } else if (network === "develop") {
       multisigAddress = '0x0f4f2ac550a1b4e2280d04c21cea7ebd822934b5';
     } else if (network === 'rinkeby') {
-      multisigAddress = '0x49b7776eA56080439000fD54c45d72d3AC213020';
+      multisigAddress = '0xB34dCD26b0181329DdA3f81F5B44A6397B02A719';
     }
 
     let ShipCoin = new Migration('ShipCoin');

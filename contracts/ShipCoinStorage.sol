@@ -312,6 +312,7 @@ contract ShipCoinStorage is IStorage, MultiOwnable, String {
     require(uId > 0);
     require(contributorList[uId].active);
     require(!refundUserIds[uId]);
+    require(inArray(contributorList[uId].wallet, addr));
 
     contributorList[uId].mainWallet = addr;
     emit ChangeMainWallet(addr);
